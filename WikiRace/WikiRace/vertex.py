@@ -1,18 +1,18 @@
 # Each page is a vertex
-class Vertex:
-    def __init__(self, link):
-        self.link = link
-        self.adj = [] # list for all outgoing links of a link
+# class Vertex:
+#     def __init__(self, link):
+#         self.link = link
+#         self.adj = [] # list for all outgoing links of a link
     
-    def addNeighbor(self, neighbor):
-        if neighbor not in self.adj: # checks if link is already a neighbor of a link, if not appends the dict
-            self.adj.append(neighbor)
+#     def addNeighbor(self, neighbor):
+#         if neighbor not in self.adj: # checks if link is already a neighbor of a link, if not appends the dict
+#             self.adj.append(neighbor)
 
-    def getLink(self):
-        return self.link
+#     def getLink(self):
+#         return self.link
     
-    def getNeighbors(self):
-        return self.adj
+#     def getNeighbors(self):
+#         return self.adj
     
     # def __str__(self):
     #     result = self.link + " points to "
