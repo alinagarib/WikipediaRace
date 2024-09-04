@@ -44,8 +44,9 @@ def getWikiLinks(title):
         for page_id in pages:
             if 'links' in pages[page_id]:
                 for link in pages[page_id]['links']:
-                    if ':' not in link['title']: # Check to exclued special links
-                        links.append(link['title'])
+                    if ':' not in link['title'].strip() and not link['title'].strip().isnumeric():
+                        links.append(link['title'].strip())
+
 
         # Check for continuation key, allows to check accross multiple pages
         if 'continue' in data:
@@ -89,7 +90,7 @@ def populateBFS(start, g, max=1):
             neighbors = getWikiLinks(current_link)
              # Save the current vertex to the database
             from_vertex, created = Vertex.objects.get_or_create(link=current_link)
-            print(f"Neighbors of {current_link}: {neighbors}")
+            # print(f"Neighbors of {current_link}: {neighbors}")
             g.addVertex(current_link)
 
             for link in neighbors:

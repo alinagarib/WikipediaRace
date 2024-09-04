@@ -48,7 +48,15 @@ def rand_path():
     if len(vertices) < 2:
         raise ValueError("Not enough vertices in the graph to select two random ones.")
 
-    # Pick two random vertices
-    vertex1, vertex2 = random.sample(vertices, 2)
+    # Repeat until two vertices with a valid path are found
+    while True:
+        vertex1, vertex2 = random.sample(vertices, 2)
 
-    return vertex1, vertex2
+        # Check if a path exists between vertex1 and vertex2
+        try:
+            dijkstra_shortest_path(vertex1.link, vertex2.link)
+            # If the path is found, return the two vertices
+            return vertex1, vertex2
+        except Exception:
+            # If no path exists, select two new random vertices
+            continue

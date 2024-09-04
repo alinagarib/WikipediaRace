@@ -18,7 +18,7 @@ import GraphPath from './components/graph_paths';
 function App() {
     return (
         <div className="App">
-            <h1>Graph Application</h1>
+            <h1>WikiRace!</h1>
             <GraphPath />
         </div>
     );

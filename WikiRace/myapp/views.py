@@ -51,6 +51,20 @@ def get_shortest_path(request):
     if not start_link or not end_link:
         return Response({'error': 'Both start_link and end_link are required.'}, status=400)
 
-    solution_str = dijkstra_shortest_path(start_link, end_link)
-    return Response({'solution': solution_str})
+    try:
+        # Check if the vertices exist in the database
+        if not Vertex.objects.filter(link=start_link).exists():
+            return Response({'error': f'Start link "{start_link}" not found in the graph.'}, status=404)
+        if not Vertex.objects.filter(link=end_link).exists():
+            return Response({'error': f'End link "{end_link}" not found in the graph.'}, status=404)
+
+        # Call the Dijkstra function to find the shortest path
+        solution_str = dijkstra_shortest_path(start_link, end_link)
+        return Response({'solution': solution_str})
+
+    except Exception as e:
+        # Log the error for debugging
+        print(f"Error during shortest path calculation: {str(e)}")
+        return Response({'error': 'An error occurred while calculating the shortest path.'}, status=500)
+
 
