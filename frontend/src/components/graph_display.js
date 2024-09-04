@@ -3,22 +3,38 @@ import { Graph } from 'react-d3-graph';
 
 const GraphDisplay = () => {
     const [graphData, setGraphData] = useState({ nodes: [], links: [] });
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
 
-    // Fetch graph data from the Django API
-    useEffect(() => {
-        fetch('/api/graph/')
+    // Fetch graph data from the Django API with pagination
+    const fetchGraphData = (page) => {
+        fetch(`/api/graph/?page=${page}`)
             .then((response) => response.json())
             .then((data) => {
                 setGraphData({
-                    nodes: data.nodes,
-                    links: data.links,
+                    nodes: [...graphData.nodes, ...data.nodes],  // Append new nodes
+                    links: [...graphData.links, ...data.links],  // Append new links
                 });
+                setTotalPages(data.total_pages);
             });
-    }, []);
+    };
 
-    // Define graph configuration options
+    useEffect(() => {
+        fetchGraphData(currentPage);  // Fetch initial data
+    }, [currentPage]);
+
+    // Function to load more data (next page)
+    const loadMoreData = () => {
+        if (currentPage < totalPages) {
+            setCurrentPage(currentPage + 1);
+        }
+    };
+
+    // Graph configuration options
     const config = {
+        staticGraph: false,
         nodeHighlightBehavior: true,
+        maxNodesPerFrame: 200,  // Set a limit on how many nodes are rendered
         node: {
             color: 'lightgreen',
             size: 300,
@@ -33,10 +49,13 @@ const GraphDisplay = () => {
         <div>
             <h2>Graph Visualization</h2>
             <Graph
-                id="graph-id" // id is mandatory, unique identifier for the graph
-                data={graphData}
-                config={config}
+                id="graph-id"  // Unique ID for the graph
+                data={graphData}  // Data prop contains nodes and links
+                config={config}  // Pass the config object here
             />
+            {currentPage < totalPages && (
+                <button onClick={loadMoreData}>Load More</button>  // Button to load more data
+            )}
         </div>
     );
 };
