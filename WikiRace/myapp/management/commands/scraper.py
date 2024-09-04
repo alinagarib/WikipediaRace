@@ -74,7 +74,7 @@ def getWikiLinks(title):
     #             # g.vertices[link].addNeighbor(edge)
     #             g.addEdge(link, edge)
 
-def populateBFS(start, g, max=3):
+def populateBFS(start, g, max=1):
     queue = deque([(start, 0)])  # Queue to manage BFS, store (link, depth)
     visited = set()  # Set to track visited pages and avoid re-fetching
 
@@ -89,7 +89,7 @@ def populateBFS(start, g, max=3):
             neighbors = getWikiLinks(current_link)
              # Save the current vertex to the database
             from_vertex, created = Vertex.objects.get_or_create(link=current_link)
-            # print(f"Neighbors of {current_link}: {neighbors}")
+            print(f"Neighbors of {current_link}: {neighbors}")
             g.addVertex(current_link)
 
             for link in neighbors:
@@ -105,15 +105,15 @@ def populateBFS(start, g, max=3):
 #     populateBFS("Main Page", links)
 
 class Command(BaseCommand):
-    help = 'Scrape Wikipedia starting from the "Main Page" with a depth of 3 by default, and populate the graph in the database.'
+    help = 'Scrape Wikipedia starting from the "Main Page" with a depth of 1 by default, and populate the graph in the database.'
 
     def add_arguments(self, parser):
         parser.add_argument('--start_page', type=str, default='Main Page', help='The title of the Wikipedia page to start scraping from (default: "Main Page").')
-        parser.add_argument('--max_depth', type=int, default=3, help='The maximum depth to traverse from the start page (default: 5).')
+        parser.add_argument('--max_depth', type=int, default=1, help='The maximum depth to traverse from the start page (default: 1).')
 
     def handle(self, *args, **kwargs):
         start_page = kwargs.get('start_page', 'Main Page')
-        max_depth = kwargs.get('max_depth', 3)
+        max_depth = kwargs.get('max_depth', 1)
         
         self.stdout.write(f"Starting to scrape from {start_page} with a max depth of {max_depth}...")
         

@@ -32,6 +32,8 @@ const GraphDisplay = () => {
 
     // Graph configuration options
     const config = {
+        height: 500,  // Explicitly set a height for the graph
+        width: 800,
         staticGraph: false,
         nodeHighlightBehavior: true,
         maxNodesPerFrame: 200,  // Set a limit on how many nodes are rendered
