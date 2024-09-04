@@ -19,3 +19,6 @@ class Edge(models.Model):
     from_vertex = models.ForeignKey(Vertex, related_name='outgoing_edges', on_delete=models.CASCADE)
     to_vertex = models.ForeignKey(Vertex, related_name='incoming_edges', on_delete=models.CASCADE)
 
+    # def __str__(self):
+    #     return f"{self.source.title} -> {self.target.title}"
+

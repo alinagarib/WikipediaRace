@@ -5,6 +5,7 @@ from collections import deque
 import os
 import django
 import sys
+from django.core.management.base import BaseCommand
 
 # Add the project directory to the Python path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -13,7 +14,9 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'WikiRace.settings')
 django.setup()
 
 # from WikiRace.WikiApp.models import Vertex, Edge
-from WikiRace.graph import Graph
+from myapp.utils import Graph
+
+
 
 def getWikiLinks(title):
     S = requests.Session()
@@ -49,26 +52,26 @@ def getWikiLinks(title):
         else:
             break
 
-        time.sleep(0.5)
+        time.sleep(0.1)
 
     return links
 
-# def populateGraph(title, g):
-#     # Gets all links from a given page
+    # def populateGraph(title, g):
+    #     # Gets all links from a given page
 
-#     neighbors = getWikiLinks(title)
-#     g.addVertex(title) # Adds vertex into the graph
+    #     neighbors = getWikiLinks(title)
+    #     g.addVertex(title) # Adds vertex into the graph
 
-#     for link in neighbors: # Adds all neighbors into the vertex
-#         # g.vertices[title].addNeighbor(link)
-#         g.addEdge(title, link) # Created edges in the graph from the passed in page to each neighbor
+    #     for link in neighbors: # Adds all neighbors into the vertex
+    #         # g.vertices[title].addNeighbor(link)
+    #         g.addEdge(title, link) # Created edges in the graph from the passed in page to each neighbor
 
-#     for link in neighbors:
-#         neighbors = getWikiLinks(link)
-#         g.addVertex(link)
-#         for edge in neighbors:
-#             # g.vertices[link].addNeighbor(edge)
-#             g.addEdge(link, edge)
+    #     for link in neighbors:
+    #         neighbors = getWikiLinks(link)
+    #         g.addVertex(link)
+    #         for edge in neighbors:
+    #             # g.vertices[link].addNeighbor(edge)
+    #             g.addEdge(link, edge)
 
 def populateBFS(start, g, max=5):
     queue = deque([(start, 0)])  # Queue to manage BFS, store (link, depth)
@@ -92,6 +95,30 @@ def populateBFS(start, g, max=5):
                     queue.append((link, depth + 1))
 
 
-if __name__ == "__main__": 
-    links = Graph()
-    populateBFS("Main Page", links)
+# if __name__ == "__main__": 
+#     links = Graph()
+#     populateBFS("Main Page", links)
+
+class Command(BaseCommand):
+    help = 'Scrape Wikipedia starting from the "Main Page" with a depth of 5 by default, and populate the graph in the database.'
+
+    def add_arguments(self, parser):
+        parser.add_argument('--start_page', type=str, default='Main Page', help='The title of the Wikipedia page to start scraping from (default: "Main Page").')
+        parser.add_argument('--max_depth', type=int, default=5, help='The maximum depth to traverse from the start page (default: 5).')
+
+    def handle(self, *args, **kwargs):
+        start_page = kwargs.get('start_page', 'Main Page')
+        max_depth = kwargs.get('max_depth', 5)
+        
+        self.stdout.write(f"Starting to scrape from {start_page} with a max depth of {max_depth}...")
+        
+        # Create the Graph instance
+        graph = Graph()
+
+        # Call the populateBFS function
+        populateBFS(start_page, graph, max_depth)
+        
+        self.stdout.write(self.style.SUCCESS(f"Scraping complete from {start_page} with max depth {max_depth}."))
+
+# usage : python manage.py scraper
+# or : python manage.py scraper --start_page="Albert Einstein" --max_depth=3

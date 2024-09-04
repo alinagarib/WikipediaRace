@@ -1,5 +1,5 @@
 # from vertex import Vertex
-from WikiApp.models import Vertex, Edge
+from myapp.models import Vertex, Edge
 
 # Each link between a page is a directed edge
 # class Graph:
@@ -48,9 +48,9 @@ class Graph:
         return vertex
 
     def addEdge(self, from_link, to_link):
-        if from_link not in self.vertices:
+        if from_link not in self.getVertices():
             from_vertex = self.addVertex(from_link)
-        if to_link not in self.vertices:
+        if to_link not in self.getVertices():
             to_vertex = self.addVertex(to_link)
 
         Edge.objects.get_or_create(from_vertex=from_vertex, to_vertex=to_vertex)
