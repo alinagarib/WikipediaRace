@@ -22,9 +22,9 @@ def get_graph_data(request):
 
     return Response(graph_data)
 
-# def home(request):
-#     return HttpResponse("hello world")
+def home(request):
+    return HttpResponse("hello world")
 
-# def graph(request):
-#     links = Vertex.objects.all()
-#     return render(request, "graph.html", {"link": links})
+def graph(request):
+    links = Vertex.objects.all()
+    return render(request, "graph.html", {"link": links})
