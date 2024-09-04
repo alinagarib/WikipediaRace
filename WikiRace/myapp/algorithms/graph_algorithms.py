@@ -1,4 +1,5 @@
 import heapq
+import random
 from myapp.models import Vertex, Edge
 
 def dijkstra_shortest_path(start_link, end_link):
