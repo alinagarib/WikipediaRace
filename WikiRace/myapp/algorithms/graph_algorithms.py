@@ -55,7 +55,7 @@ def rand_path():
 
         # Check if a path exists between vertex1 and vertex2
         try:
-            path_exists(vertex1.link, vertex2.link)
+            dijkstra_shortest_path(vertex1.link, vertex2.link)
             # If the path is found, return the two vertices
             return vertex1, vertex2
         except Exception:
