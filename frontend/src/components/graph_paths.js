@@ -89,8 +89,16 @@ const GraphPath = () => {
             <button onClick={fetchRandomLinks}>Get Random Links</button>
             {startLink && endLink && (
                 <div>
-                    <p>Start Link: {startLink}</p>
-                    <p>End Link: {endLink}</p>
+                    <p>Start Link: 
+                        <a href={`https://en.wikipedia.org/wiki/${startLink}`} target="_blank" rel="noopener noreferrer">
+                            {startLink}
+                        </a>
+                    </p>
+                    <p>End Link: 
+                        <a href={`https://en.wikipedia.org/wiki/${endLink}`} target="_blank" rel="noopener noreferrer">
+                            {endLink}
+                        </a>
+                    </p>  
                 </div>
             )}
             <button onClick={fetchShortestPath} disabled={!startLink || !endLink}>
@@ -102,7 +110,6 @@ const GraphPath = () => {
                     {error && <p style={{ color: 'red' }}>{error}</p>}
                 </>
             )}
-
             <div>
             <label htmlFor="start">Start Link: </label>
             <input 

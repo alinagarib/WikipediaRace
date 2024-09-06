@@ -6,6 +6,7 @@ import os
 import django
 import sys
 from django.core.management.base import BaseCommand
+from SPARQLWrapper import SPARQLWrapper, JSON
 
 # Add the project directory to the Python path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -17,46 +18,88 @@ django.setup()
 from myapp.utils import Graph
 from myapp.models import Vertex, Edge
 
-
+from SPARQLWrapper import SPARQLWrapper, JSON
 
 def getWikiLinks(title):
-    S = requests.Session()
+    # Create the SPARQL query to get outgoing links from the Wikidata entity
+    sparql = SPARQLWrapper("https://query.wikidata.org/sparql")
+    
+    # SPARQL query to retrieve all linked entities but exclude numeric-only titles
+    query = f"""
+    SELECT ?linkedItemLabel WHERE {{
+      ?wikiTitle schema:name "{title}"@en .          # Find the Wikidata item for the given title
+      ?wikiTitle schema:about ?wikidataEntity .      # Find the related Wikidata entity
 
-    URL = "https://en.wikipedia.org/w/api.php"
+      # Get outgoing links (linked items)
+      ?wikidataEntity ?property ?linkedItem .
 
-    PARAMS = {
-        "action": "query",
-        "format": "json",
-        "titles": f'{title}',
-        "prop": "links",
-        "pllimit": "max"
-    }
+      # Filter to exclude literals or properties not related to items
+      FILTER(isIRI(?linkedItem)).
 
+      # Add labels to the linked items and exclude numeric-only links
+      ?linkedItem rdfs:label ?linkedItemLabel .
+      FILTER(LANG(?linkedItemLabel) = "en").          # Ensure the label is in English
+      FILTER(!regex(?linkedItemLabel, "^[0-9]+$")).   # Exclude numeric-only labels (e.g., '12345')
+
+      # Use the label service to get human-readable names
+      SERVICE wikibase:label {{ bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en" . }}
+    }}
+    """
+    
+    sparql.setQuery(query)
+    sparql.setReturnFormat(JSON)
+    results = sparql.query().convert()
+    
     links = []
-
-    while True:
-        response = S.get(url=URL, params=PARAMS)
-        data = response.json()
-        
-        pages = data['query']['pages'] # Response contains dict of pages
-
-        # Gets link titles from page and appends links array
-        for page_id in pages:
-            if 'links' in pages[page_id]:
-                for link in pages[page_id]['links']:
-                    if ':' not in link['title'].strip() and not link['title'].strip().isnumeric():
-                        links.append(link['title'].strip())
-
-
-        # Check for continuation key, allows to check accross multiple pages
-        if 'continue' in data:
-            PARAMS.update(data['continue'])
-        else:
-            break
-
-        time.sleep(0.1)
-
+    
+    # Parse the results and collect the linked items
+    for result in results["results"]["bindings"]:
+        link_label = result["linkedItemLabel"]["value"]
+        links.append(link_label.strip())
+    
     return links
+
+
+
+# API request implememnation
+# def getWikiLinks(title):
+#     S = requests.Session()
+
+#     URL = "https://en.wikipedia.org/w/api.php"
+
+#     PARAMS = {
+#         "action": "query",
+#         "format": "json",
+#         "titles": f'{title}',
+#         "prop": "links",
+#         "pllimit": "max"
+#     }
+
+#     links = []
+
+#     while True:
+#         response = S.get(url=URL, params=PARAMS)
+#         data = response.json()
+        
+#         pages = data['query']['pages'] # Response contains dict of pages
+
+#         # Gets link titles from page and appends links array
+#         for page_id in pages:
+#             if 'links' in pages[page_id]:
+#                 for link in pages[page_id]['links']:
+#                     if ':' not in link['title'].strip() and not link['title'].strip().isnumeric():
+#                         links.append(link['title'].strip())
+
+
+#         # Check for continuation key, allows to check accross multiple pages
+#         if 'continue' in data:
+#             PARAMS.update(data['continue'])
+#         else:
+#             break
+
+#         time.sleep(0.1)
+
+#     return links
 
     # def populateGraph(title, g):
     #     # Gets all links from a given page
