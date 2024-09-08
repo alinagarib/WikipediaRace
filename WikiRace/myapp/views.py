@@ -52,6 +52,7 @@ def get_shortest_path(request):
         return Response({'error': 'Both start_link and end_link are required.'}, status=400)
 
     try:
+        print(f"Calculating shortest path from {start_link} to {end_link}")
         # Check if the vertices exist in the database
         if not Vertex.objects.filter(link=start_link).exists():
             return Response({'error': f'Start link "{start_link}" not found in the graph.'}, status=404)
@@ -61,6 +62,10 @@ def get_shortest_path(request):
         # Call the Dijkstra function to find the shortest path
         solution_str = dijkstra_shortest_path(start_link, end_link)
         return Response({'solution': solution_str})
+    
+    except ValueError as e:
+        print(f"Error: {str(e)}")
+        return Response({'error': str(e)}, status=400)
 
     except Exception as e:
         # Log the error for debugging

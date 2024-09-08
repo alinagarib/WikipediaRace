@@ -10,42 +10,45 @@ def dijkstra_shortest_path(start_link, end_link):
     except Vertex.DoesNotExist:
         raise ValueError("Start or End link not found in the database.")
 
-    # Priority queue (min-heap) to store the next vertex to process
+    # Priority queue (min-heap) to store the next vertex to process (distance, link)
     pq = []
-    heapq.heappush(pq, (0, start_vertex))  # (distance, vertex)
-    distances = {start_vertex: 0}
-    previous_nodes = {start_vertex: None}
+    heapq.heappush(pq, (0, start_vertex.link))  # (distance, link)
+    distances = {start_vertex.link: 0}
+    previous_nodes = {start_vertex.link: None}
 
     while pq:
-        current_distance, current_vertex = heapq.heappop(pq)
+        current_distance, current_link = heapq.heappop(pq)
 
-        if current_vertex == end_vertex:
+        if current_link == end_link:
             break  # Found the shortest path
+
+        # Get current vertex from link
+        current_vertex = Vertex.objects.get(link=current_link)
 
         # Get all outgoing edges (respects directionality)
         outgoing_edges = Edge.objects.filter(from_vertex=current_vertex)
 
         for edge in outgoing_edges:
-            neighbor = edge.to_vertex  # Follow only outgoing links
+            neighbor = edge.to_vertex.link  # Use link instead of the object
             distance = current_distance + 1  # Assuming weight of 1 for all edges
 
             if neighbor not in distances or distance < distances[neighbor]:
                 distances[neighbor] = distance
-                previous_nodes[neighbor] = current_vertex
+                previous_nodes[neighbor] = current_link
                 heapq.heappush(pq, (distance, neighbor))
 
     # Reconstruct the shortest path
     path = []
-    current = end_vertex
+    current = end_link
     while current:
-        path.insert(0, current.link)
+        path.insert(0, current)
         current = previous_nodes.get(current)
 
     # If no path exists, raise an error or return None
     if path[0] != start_link:
         raise ValueError("No valid path found between the given links.")
 
-    solution_str = f"The shortest path from {start_link} to {end_link} can be completed in {distances[end_vertex]} clicks. This is the path: "
+    solution_str = f"The shortest path from {start_link} to {end_link} can be completed in {distances[end_link]} clicks. This is the path: "
     solution_str += " -> ".join(path)
 
     return solution_str
@@ -69,7 +72,7 @@ def rand_path():
         else:
             continue
         # try:
-        #     dijkstra_shortest_path(vertex1.link, vertex2.link)
+        #     path_exists(vertex1.link, vertex2.link)
         #     # If the path is found, return the two vertices
         #     return vertex1, vertex2
         # except Exception:

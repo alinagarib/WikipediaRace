@@ -8,3 +8,5 @@ class Command(BaseCommand):
         Vertex.objects.all().delete()
         Edge.objects.all().delete()
         self.stdout.write(self.style.SUCCESS('Successfully cleared the database.'))
+
+# usage: python manage.py clear_database
