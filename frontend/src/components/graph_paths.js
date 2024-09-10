@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './path.css';
 
 const GraphPath = () => {
     const [startLink, setStartLink] = useState('');
@@ -9,6 +10,7 @@ const GraphPath = () => {
     const [error, setError] = useState('');
     const [isPathSearched, setIsPathSearched] = useState(false);
     const [isPathSearchedInput, setIsPathSearchedInput] = useState(false);
+    const [gotRandomLinks, setGotLinks] = useState(false);
 
     const fetchRandomLinks = () => {
         fetch('/api/random-links/')
@@ -21,6 +23,7 @@ const GraphPath = () => {
                     setEndLink(data.end_link);
                     setError('');
                 }
+                setGotLinks(true);
             })
             .catch(err => {
                 setError('Error fetching random links.');
@@ -85,7 +88,6 @@ const GraphPath = () => {
 
     return (
         <div>
-            <h2>Graph Path Finder</h2>
             <button onClick={fetchRandomLinks}>Get Random Links</button>
             {startLink && endLink && (
                 <div>
@@ -101,12 +103,23 @@ const GraphPath = () => {
                     </p>  
                 </div>
             )}
+
+            {gotRandomLinks && (
             <button onClick={fetchShortestPath} disabled={!startLink || !endLink}>
                 Find Shortest Path
             </button>
+            )}
+
             {isPathSearched && (
                 <>
-                    {pathSolution && <p>{pathSolution}</p>}
+                    {pathSolution && <p style={{ 
+                    width: '800px', /* Define the width with px */
+                    margin: '0 auto', /* Center the element horizontally */
+                    marginTop: '30px',
+                    marginBottom: '30px',
+                    textAlign: 'center', /* Center the text content */
+                    whiteSpace: 'normal' /* Allow text to wrap onto multiple lines */
+                    }}>{pathSolution}</p>}
                     {error && <p style={{ color: 'red' }}>{error}</p>}
                 </>
             )}
@@ -120,6 +133,7 @@ const GraphPath = () => {
                 onChange={(e) => setStart(e.target.value)}  // Capture the input value for startLink
             />
             
+            <div>
             <label htmlFor="end">End Link: </label>
             <input 
                 type="text" 
@@ -128,10 +142,12 @@ const GraphPath = () => {
                 value={end} 
                 onChange={(e) => setEnd(e.target.value)}  // Capture the input value for endLink
             />
-
-            <button onClick={fetchShortestPathInput} disabled={!start || !end}>
+            </div>
+            <div>
+            <button2 onClick={fetchShortestPathInput} disabled={!start || !end}>
                 Find Shortest Path
-            </button>
+            </button2>
+            </div>
 
             {isPathSearchedInput && (
                 <>

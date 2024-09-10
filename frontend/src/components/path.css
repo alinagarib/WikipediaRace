@@ -1,0 +1,44 @@
+button {
+    background-color: #05534c;
+    color: white;
+    padding: 12px 30px;
+    font-size: 18px;
+    font-family: 'Lucida Console', 'Monaco', monospace;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #033a4b;
+}
+
+input {
+    padding: 10px;
+    margin: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+input:focus {
+    border-color: #4CAF50;
+    outline: none;
+}
+
+button2 {
+    background-color: #480553;
+    color: white;
+    padding: 12px 30px;
+    font-size: 18px;
+    font-family: 'Lucida Console', 'Monaco', monospace;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button2:hover {
+    background-color: #2c022d;
+}
+

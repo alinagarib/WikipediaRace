@@ -1,5 +1,20 @@
 .App {
   text-align: center;
+  background-color: #282c34;
+  background-image: 
+    linear-gradient(rgba(0, 0, 0.1, 0.7), rgba(0, 0, 0.1, 0.7)),
+    url('\images/wikiracebg.webp');
+  background-size: cover;
+  background-position: center;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+  height: 100vh; 
+  overflow: hidden;
 }
 
 .App-logo {
@@ -13,7 +28,7 @@
   }
 }
 
-.App-header {
+/* .App-header {
   background-color: #282c34;
   min-height: 100vh;
   display: flex;
@@ -22,7 +37,7 @@
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
-}
+} */
 
 .App-link {
   color: #61dafb;
@@ -41,4 +56,56 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+h1 {
+  font-family: 'Georgia', 'Times New Roman', serif; /* Use built-in serif fonts */
+  font-size: 4rem;
+  margin-bottom: 20px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+  top: 0; 
+  position: fixed;
+  width: 100%; 
+  text-align: center; 
+  z-index: 1000;  
+  margin: 0;
+  /* background-color: rgba(219, 207, 207, 0.7); Optional: Make the background for the header semi-transparent */
+}
+
+p {
+  font-family: 'Lucida Console', 'Monaco', monospace;
+  /* margin-top: 120px; 
+  top: 10;  */
+}
+
+label {
+  font-family: 'Lucida Console', 'Monaco', monospace;
+}
+
+a {
+  font-family: 'Lucida Console', 'Monaco', monospace;
+  color: white;
+  padding: 12px 30px;
+}
+
+h2 {
+  font-family: 'Georgia', 'Times New Roman', serif; /* Use built-in serif fonts */
+  font-size: 2rem;
+  margin: 0;
+  padding: 10px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); 
+  position: fixed;
+  width: 50%; 
+  text-align: center;
+  top: 70px; /* Position h2 just below h1 */
+  z-index: 999;
+  /* background-color: rgba(232, 219, 219, 0.7); Optional: Make h2 background semi-transparent */
+}
+
+.graph-container {
+  margin-top: 150px; /* Space between graph and fixed headers */
+  padding: 20px;
+  width: 100%;
+  height: 500px; /* Adjust the height as needed */
+  border: 1px solid black; /* Optional: Add a border for debugging */
 }
