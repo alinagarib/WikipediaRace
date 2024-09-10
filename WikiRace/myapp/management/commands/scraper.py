@@ -6,6 +6,7 @@ import os
 import django
 import sys
 from django.core.management.base import BaseCommand
+#import urllib
 
 # Add the project directory to the Python path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -15,9 +16,9 @@ django.setup()
 
 # from WikiRace.WikiApp.models import Vertex, Edge
 from myapp.utils import Graph
+from myapp.models import Vertex, Edge
 
-
-
+# API request implememnation
 def getWikiLinks(title):
     S = requests.Session()
 
@@ -43,8 +44,9 @@ def getWikiLinks(title):
         for page_id in pages:
             if 'links' in pages[page_id]:
                 for link in pages[page_id]['links']:
-                    if ':' not in link['title']: # Check to exclued special links
-                        links.append(link['title'])
+                    if ':' not in link['title'].strip() and not link['title'].strip().isnumeric():
+                        links.append(link['title'].strip())
+
 
         # Check for continuation key, allows to check accross multiple pages
         if 'continue' in data:
@@ -56,24 +58,8 @@ def getWikiLinks(title):
 
     return links
 
-    # def populateGraph(title, g):
-    #     # Gets all links from a given page
 
-    #     neighbors = getWikiLinks(title)
-    #     g.addVertex(title) # Adds vertex into the graph
-
-    #     for link in neighbors: # Adds all neighbors into the vertex
-    #         # g.vertices[title].addNeighbor(link)
-    #         g.addEdge(title, link) # Created edges in the graph from the passed in page to each neighbor
-
-    #     for link in neighbors:
-    #         neighbors = getWikiLinks(link)
-    #         g.addVertex(link)
-    #         for edge in neighbors:
-    #             # g.vertices[link].addNeighbor(edge)
-    #             g.addEdge(link, edge)
-
-def populateBFS(start, g, max=5):
+def populateBFS(start, g, max=1):
     queue = deque([(start, 0)])  # Queue to manage BFS, store (link, depth)
     visited = set()  # Set to track visited pages and avoid re-fetching
 
@@ -86,29 +72,30 @@ def populateBFS(start, g, max=5):
         if current_link not in visited:
             visited.add(current_link)
             neighbors = getWikiLinks(current_link)
+             # Save the current vertex to the database
+            time.sleep(0.5)
+            from_vertex, created = Vertex.objects.get_or_create(link=current_link)
             # print(f"Neighbors of {current_link}: {neighbors}")
             g.addVertex(current_link)
 
             for link in neighbors:
+                to_vertex, created = Vertex.objects.get_or_create(link=link)
+                Edge.objects.get_or_create(from_vertex=from_vertex, to_vertex=to_vertex)
                 g.addEdge(current_link, link)
                 if link not in visited:
                     queue.append((link, depth + 1))
 
 
-# if __name__ == "__main__": 
-#     links = Graph()
-#     populateBFS("Main Page", links)
-
 class Command(BaseCommand):
-    help = 'Scrape Wikipedia starting from the "Main Page" with a depth of 5 by default, and populate the graph in the database.'
+    help = 'Scrape Wikipedia starting from the "Main Page" with a depth of 1 by default, and populate the graph in the database.'
 
     def add_arguments(self, parser):
         parser.add_argument('--start_page', type=str, default='Main Page', help='The title of the Wikipedia page to start scraping from (default: "Main Page").')
-        parser.add_argument('--max_depth', type=int, default=5, help='The maximum depth to traverse from the start page (default: 5).')
+        parser.add_argument('--max_depth', type=int, default=1, help='The maximum depth to traverse from the start page (default: 1).')
 
     def handle(self, *args, **kwargs):
         start_page = kwargs.get('start_page', 'Main Page')
-        max_depth = kwargs.get('max_depth', 5)
+        max_depth = kwargs.get('max_depth', 1)
         
         self.stdout.write(f"Starting to scrape from {start_page} with a max depth of {max_depth}...")
         

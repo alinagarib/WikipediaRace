@@ -6,7 +6,7 @@ class Vertex(models.Model):
     link = models.CharField(max_length=255, unique=True)
 
     def add_neighbor(self, neighbor):
-        if not self.neighbors.filter(id=neighbor.id).exists():
+        if not self.neighbors.filter(link=neighbor.link).exists():
             self.neighbors.add(neighbor)
 
     def get_neighbors(self):
