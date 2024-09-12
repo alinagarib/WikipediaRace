@@ -54,9 +54,9 @@ def get_shortest_path(request):
     try:
         print(f"Calculating shortest path from {start_link} to {end_link}")
         # Check if the vertices exist in the database
-        if not Vertex.objects.filter(link=start_link).exists():
+        if not Vertex.objects.filter(link__iexact=start_link).exists():
             return Response({'error': f'Start link "{start_link}" not found in the graph.'}, status=404)
-        if not Vertex.objects.filter(link=end_link).exists():
+        if not Vertex.objects.filter(link__iexact=end_link).exists():
             return Response({'error': f'End link "{end_link}" not found in the graph.'}, status=404)
 
         # Call the Dijkstra function to find the shortest path

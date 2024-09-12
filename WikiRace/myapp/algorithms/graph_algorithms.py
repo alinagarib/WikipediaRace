@@ -5,13 +5,15 @@ from myapp.models import Vertex, Edge
 
 def dijkstra_shortest_path(start_link, end_link):
     try:
-        start_vertex = Vertex.objects.get(link=start_link)
-        end_vertex = Vertex.objects.get(link=end_link)
+        start_vertex = Vertex.objects.get(link__iexact=start_link)
+        end_vertex = Vertex.objects.get(link__iexact=end_link)
     except Vertex.DoesNotExist:
         raise ValueError("Start or End link not found in the database.")
 
     # Priority queue (min-heap) to store the next vertex to process (distance, link)
     pq = []
+    end_link = end_vertex.link
+    start_link = start_vertex.link
     heapq.heappush(pq, (0, start_vertex.link))  # (distance, link)
     distances = {start_vertex.link: 0}
     previous_nodes = {start_vertex.link: None}
