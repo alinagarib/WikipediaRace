@@ -11,7 +11,8 @@ function InputPage() {
     const [pathLoadingMessage, setPathLoadingMessage] = useState('');
 
     const fetchShortestPathInput = () => {
-        setPathLoadingMessage('Finding the shortest path... XD')
+        setError('');
+        setPathLoadingMessage('Finding the shortest path... XD');
         setPathLoading(true);
         setPathSolution('');
         fetch('/api/shortest-path/', {

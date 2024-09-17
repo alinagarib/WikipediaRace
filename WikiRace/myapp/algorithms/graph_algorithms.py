@@ -5,8 +5,8 @@ from myapp.models import Vertex, Edge
 
 def dijkstra_shortest_path(start_link, end_link):
     try:
-        start_vertex = Vertex.objects.get(link__iexact=start_link)
-        end_vertex = Vertex.objects.get(link__iexact=end_link)
+        start_vertex = Vertex.objects.get(link__iexact=start_link.strip())
+        end_vertex = Vertex.objects.get(link__iexact=end_link.strip())
     except Vertex.DoesNotExist:
         raise ValueError("Start or End link not found in the database.")
 
@@ -17,6 +17,11 @@ def dijkstra_shortest_path(start_link, end_link):
     heapq.heappush(pq, (0, start_vertex.link))  # (distance, link)
     distances = {start_vertex.link: 0}
     previous_nodes = {start_vertex.link: None}
+
+    if path_exists(start_link, end_link):
+        print("true")
+    else:
+        print("false")
 
     while pq:
         current_distance, current_link = heapq.heappop(pq)
@@ -29,7 +34,7 @@ def dijkstra_shortest_path(start_link, end_link):
 
         # Get all outgoing edges (respects directionality)
         outgoing_edges = Edge.objects.filter(from_vertex=current_vertex)
-
+    
         for edge in outgoing_edges:
             neighbor = edge.to_vertex.link  # Use link instead of the object
             distance = current_distance + 1  # Assuming weight of 1 for all edges
@@ -119,5 +124,3 @@ def path_exists(start_link, end_link):
 
     # If BFS completes and we haven't found the end vertex, return False
     return False
-
-
