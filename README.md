@@ -19,14 +19,14 @@ RESTful API Endpoints: Provides endpoints to interact with the application, incl
 - Start the Development Server
 ## Usage
 ### API Endpoints
-** Get Shortest Path **
+#### Get Shortest Path 
 - URL: /api/shortest-path/
 - Method: POST
 - Parameters:
   - start_link (string): Title of the starting Wikipedia article.
   - end_link (string): Title of the ending Wikipedia article.
 - Description: Calculates the shortest path between the two specified articles.
-** Check if Path Exists **
+#### Check if Path Exists 
 - URL: /api/path-exists/
 - Method: GET
 - Parameters:
