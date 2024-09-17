@@ -79,7 +79,6 @@ def populateBFS(start, g, max):
             visited.add(current_link)
             neighbors = getWikiLinks(current_link)
              # Save the current vertex to the database
-            time.sleep(0.1)
             from_vertex, created = Vertex.objects.get_or_create(link=current_link)
             # print(f"Neighbors of {current_link}: {neighbors}")
             g.addVertex(current_link)
