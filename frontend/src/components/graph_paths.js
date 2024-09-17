@@ -45,6 +45,8 @@ const GraphPath = () => {
     const fetchShortestPath = () => {
         setPathLoadingMessage('Finding the shortest path... XD')
         setPathLoading(true);
+        setPathSolution('');
+        setError('');
         fetch('/api/shortest-path/', {
             method: 'POST',
             headers: {

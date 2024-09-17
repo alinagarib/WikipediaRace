@@ -119,5 +119,3 @@ def path_exists(start_link, end_link):
 
     # If BFS completes and we haven't found the end vertex, return False
     return False
-
-

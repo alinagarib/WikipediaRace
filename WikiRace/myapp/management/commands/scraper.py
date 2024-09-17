@@ -24,42 +24,48 @@ def getWikiLinks(title):
 
     URL = "https://en.wikipedia.org/w/api.php"
 
+    # First, resolve redirects to get the actual page title
     PARAMS = {
         "action": "query",
         "format": "json",
-        "titles": f'{title}',
-        "prop": "links",
-        "pllimit": "max"
+        "titles": title,
+        "redirects": 1
     }
+
+    response = S.get(url=URL, params=PARAMS)
+    data = response.json()
+
+    # Get the normalized title after redirects
+    pages = data['query']['pages']
+    page_id = next(iter(pages))
+    resolved_title = pages[page_id]['title']
+
+    # Now use action=parse to get all links, including those from templates
+    PARAMS = {
+        "action": "parse",
+        "format": "json",
+        "page": resolved_title,
+        "prop": "links",
+        "pllimit": "max",
+        "redirects": 1
+    }
+
+    response = S.get(url=URL, params=PARAMS)
+    data = response.json()
 
     links = []
 
-    while True:
-        response = S.get(url=URL, params=PARAMS)
-        data = response.json()
-        
-        pages = data['query']['pages'] # Response contains dict of pages
-
-        # Gets link titles from page and appends links array
-        for page_id in pages:
-            if 'links' in pages[page_id]:
-                for link in pages[page_id]['links']:
-                    if ':' not in link['title'].strip() and not link['title'].strip().isnumeric():
-                        links.append(link['title'].strip())
-
-
-        # Check for continuation key, allows to check accross multiple pages
-        if 'continue' in data:
-            PARAMS.update(data['continue'])
-        else:
-            break
-
-        time.sleep(0.1)
+    if 'parse' in data and 'links' in data['parse']:
+        for link in data['parse']['links']:
+            link_title = link['*'].strip()
+            # Exclude special pages and files
+            if ':' not in link_title and not link_title.isnumeric():
+                links.append(link_title)
 
     return links
 
 
-def populateBFS(start, g, max=1):
+def populateBFS(start, g, max):
     queue = deque([(start, 0)])  # Queue to manage BFS, store (link, depth)
     visited = set()  # Set to track visited pages and avoid re-fetching
 
@@ -73,7 +79,7 @@ def populateBFS(start, g, max=1):
             visited.add(current_link)
             neighbors = getWikiLinks(current_link)
              # Save the current vertex to the database
-            time.sleep(0.5)
+            time.sleep(0.1)
             from_vertex, created = Vertex.objects.get_or_create(link=current_link)
             # print(f"Neighbors of {current_link}: {neighbors}")
             g.addVertex(current_link)
