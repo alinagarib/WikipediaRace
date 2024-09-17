@@ -26,14 +26,14 @@ RESTful API Endpoints: Provides endpoints to interact with the application, incl
 - Parameters:
   - start_link (string): Title of the starting Wikipedia article.
   - end_link (string): Title of the ending Wikipedia article.
-Description: Calculates the shortest path between the two specified articles.
+- Description: Calculates the shortest path between the two specified articles.
 ### Check if Path Exists
 - URL: /api/path-exists/
 - Method: GET
 - Parameters:
   - start_link (string): Title of the starting Wikipedia article.
   - end_link (string): Title of the ending Wikipedia article.
-Description: Checks whether a path exists between the two specified articles.
+- Description: Checks whether a path exists between the two specified articles.
 
 Thank you!
 
